@@ -1,6 +1,6 @@
 # https://cpp-linter.github.io/cpp-linter-action/
 
-name: CI
+name: ESP_CI
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -44,7 +44,7 @@ jobs:
                     esp_idf_docker_image: ${{ env.IDF_DOCKER_IMAGE }}
                     esp_idf_version: ${{ env.IDF_DOCKER_TAG }}
                     target: esp32
-                    path: 'components/adder/test-project-qemu'
+                    path: 'test-project'
                     command: |
                         idf.py build
                         pytest
