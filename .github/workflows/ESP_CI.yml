@@ -16,7 +16,7 @@ on:
             - 'main'
 
 jobs:
-    Build & Test:
+    Build-Test:
         runs-on: ubuntu-latest
         env:
             GH_PAT: ${{ secrets.PMW_CI_PAT }}
