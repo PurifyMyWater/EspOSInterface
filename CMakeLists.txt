@@ -8,7 +8,7 @@ if(DEFINED ENV{GITHUB_ACTION})
 else()
     set(GIT_REPO git@github.com:vacmg/OSInterface.git)
 endif()
-message(STATUS "GIT_REPO: ${GIT_REPO}")
+
 FetchContent_Declare(
         OSInterface
         GIT_REPOSITORY  ${GIT_REPO}
