@@ -12,8 +12,7 @@ message(STATUS "GIT_REPO: ${GIT_REPO}")
 FetchContent_Declare(
         OSInterface
         GIT_REPOSITORY  ${GIT_REPO}
-        GIT_TAG         73fdfbf1000ea1d8a0c3e7eaa391fb7b51fec06a # TODO: use main branch
-#        GIT_TAG         main
+        GIT_TAG         main
 )
 FetchContent_MakeAvailable(OSInterface)
 target_link_libraries(${COMPONENT_LIB} PUBLIC OSInterface)
