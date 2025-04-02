@@ -50,10 +50,9 @@ jobs:
                 with:
                     esp_idf_docker_image: ${{ env.IDF_DOCKER_IMAGE }}
                     esp_idf_version: ${{ env.IDF_DOCKER_TAG }}
-                    extra_docker_args: --env GH_PAT=$GH_PAT --env GITHUB_ACTION=$GITHUB_ACTION
+                    extra_docker_args: --env GH_PAT=$GH_PAT --env GITHUB_ACTION=$GITHUB_ACTION --volume $HOME/.gitconfig:/root/.gitconfig
                     target: esp32
                     path: 'test-project'
                     command: |
-                        cd ~ && pwd
-#                        idf.py build
-#                        pytest
+                        idf.py build
+                        pytest
