@@ -42,7 +42,7 @@ jobs:
                 with:
                     esp_idf_docker_image: ${{ env.IDF_DOCKER_IMAGE }}
                     esp_idf_version: ${{ env.IDF_DOCKER_TAG }}
-                    extra_docker_args: --env GH_PAT=$GH_PAT --env GITHUB_ACTION=$GITHUB_ACTION --env GH_USER_NAME=$GH_USER_NAME --volume $HOME/.gitconfig:/root/tmp/.gitconfig
+                    extra_docker_args: --env GH_PAT=$GH_PAT --env GITHUB_ACTION=$GITHUB_ACTION --env GH_USER_NAME=$GH_USER_NAME
                     target: esp32
                     path: 'test-project'
                     command: |
