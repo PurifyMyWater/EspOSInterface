@@ -3,11 +3,13 @@ idf_component_register(SRCS "EspOSInterface.cpp"
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
-if(DEFINED ENV{GITHUB_ACTION})
-    set(GIT_REPO https://vacmg:$ENV{GH_PAT}@github.com/vacmg/OSInterface.git)
-else()
-    set(GIT_REPO git@github.com:vacmg/OSInterface.git)
-endif()
+#if(DEFINED ENV{GITHUB_ACTION}) # TODO remove this when CI auth is fixed
+#    set(GIT_REPO https://vacmg:$ENV{GH_PAT}@github.com/vacmg/OSInterface.git)
+#else()
+#    set(GIT_REPO git@github.com:vacmg/OSInterface.git)
+#endif()
+
+set(GIT_REPO git@github.com:vacmg/OSInterface.git)
 
 FetchContent_Declare(
         OSInterface
