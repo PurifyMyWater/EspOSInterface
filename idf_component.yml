@@ -7,3 +7,6 @@ files:
         - "test-project/*"
         - "test/*"
         - ".clang-*"
+dependencies:
+    idf:
+        version: ">=5.4.0"
