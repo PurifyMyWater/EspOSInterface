@@ -106,8 +106,13 @@ void EspOSInterface::osRunProcess(const OSInterfaceProcess process, void* arg)
 void EspOSInterface::osRunProcess(const OSInterfaceProcess process, const char* processName, void* arg)
 {
     ProcessData* processData = new ProcessData{.process = process, .arg = arg, .processName = processName};
-    xTaskCreate(osRunProcessLauncher, processName, processDefaultStackSize, processData, processDefaultPriority,
+    const auto res = xTaskCreate(osRunProcessLauncher, processName, processDefaultStackSize, processData, processDefaultPriority,
                 nullptr);
+    if (res != pdPASS)
+    {
+        OSInterfaceLogError("EspOSInterface", "Failed to create task for process %s", processName);
+        delete processData;
+    }
 }
 
 void EspOSInterface::osRunProcessLauncher(void* data)
