@@ -237,3 +237,25 @@ TEST_CASE("semaphoreTestTimeout", "[espOSInterface]")
     delete s_semaphore;
     s_semaphore = nullptr;
 }
+
+void runProcessTest(void* arg)
+{
+    volatile bool* processRun = static_cast<bool*>(arg);
+    espOSInterface.osSleep(100);
+    *processRun = true;
+}
+
+TEST_CASE("runProcessTest", "[espOSInterface]")
+{
+    volatile bool processRun = false;
+    void* arg = (void*) (&processRun);
+
+    auto millis = espOSInterface.osMillis();
+    espOSInterface.osRunProcess(runProcessTest, arg);
+
+    while (!processRun && (millis + 1000 > espOSInterface.osMillis()))
+    {
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+    TEST_ASSERT_TRUE(processRun);
+}
