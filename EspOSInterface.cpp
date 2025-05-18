@@ -1,6 +1,7 @@
 #include "EspOSInterface.h"
 #include <cstdlib>
 #include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 
 class espMutex final : public OSInterface_Mutex
@@ -95,4 +96,25 @@ void* EspOSInterface::osMalloc(const uint32_t size)
 void EspOSInterface::osFree(void* ptr)
 {
     heap_caps_free(ptr);
+}
+
+void EspOSInterface::osRunProcess(const OSInterfaceProcess process, void* arg)
+{
+    osRunProcess(process, "NewProcess", arg);
+}
+
+void EspOSInterface::osRunProcess(const OSInterfaceProcess process, const char* processName, void* arg)
+{
+    ProcessData* processData = new ProcessData{.process = process, .arg = arg, .processName = processName};
+    xTaskCreate(osRunProcessLauncher, processName, processDefaultStackSize, processData, processDefaultPriority,
+                nullptr);
+}
+
+void EspOSInterface::osRunProcessLauncher(void* data)
+{
+    auto* processData = static_cast<ProcessData*>(data);
+    OSInterfaceLogInfo("OSInterface", "Running process %s", processData->processName);
+    processData->process(processData->arg);
+    delete processData;
+    vTaskDelete(nullptr);
 }
