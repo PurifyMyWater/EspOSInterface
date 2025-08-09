@@ -15,6 +15,7 @@ on:
 
 jobs:
     Build-Test:
+        permissions: {}
         runs-on: ubuntu-latest
         env:
             GH_PAT: ${{ secrets.PMW_CI_PAT }}
