@@ -23,22 +23,26 @@ jobs:
             GH_USER_NAME: ${{ vars.PMW_CI_PAT_USERNAME }}
             GHCR_PAT: ${{ secrets.PMW_GHCR_PAT }}
             IDF_DOCKER_IMAGE: ${{ vars.IDF_DOCKER_IMAGE }}
-            IDF_DOCKER_TAG: v5.5-test3
+            IDF_DOCKER_TAG: ${{ vars.IDF_DOCKER_TAG }}
             IDF_TARGET: esp32
 
         steps:
             -   name: "Checkout repository"
                 uses: actions/checkout@v4
 
+            -   name: "Genera lista de archivos fuente"
+                run: |
+                    git ls-files '*.cpp' '*.h' > .filelist
+
             -   name: Cache Build Environment
                 id: CacheBuildEnvironment
                 uses: actions/cache@v4
                 with:
-                    key: "${{ runner.os }}-build-${{ hashFiles('**.cpp', '**.h', '**CMakeLists.txt') }}"
+                    key: "${{ runner.os }}-build-${{ hashFiles('.filelist') }}"
                     path: 'test-project/build'
 
             -   name: "Docker GitHub Container Registry Login"
-                run: echo $GHCR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+                run: echo $GHCR_PAT | docker login ghcr.io -u $GH_USER_NAME --password-stdin
 
             -   name: "ESP-IDF CI"
                 uses: espressif/esp-idf-ci-action@v1
@@ -52,12 +56,11 @@ jobs:
                         git config --global --replace-all "url.https://$GH_USER_NAME:$GH_PAT@github.com/.insteadOf" ssh://git@github.com: &&
                         git config --global --add "url.https://$GH_USER_NAME:$GH_PAT@github.com/.insteadOf" git@github.com: &&
                         git config --global --add "url.https://$GH_USER_NAME:$GH_PAT@github.com/.insteadOf" https://github.com/ &&
-                        
                         idf.py build &&
                         pytest
 
     success:
-        permissions: {}
+        permissions: { }
         runs-on: ubuntu-latest
         needs:
             - Build-Test
