@@ -38,7 +38,7 @@ jobs:
                     path: 'test-project/build'
 
             -   name: "Docker GitHub Container Registry Login"
-                run: echo $GHCR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+                run: echo $GHCR_PAT | docker login ghcr.io -u $GH_USER_NAME --password-stdin
 
             -   name: "ESP-IDF CI"
                 uses: espressif/esp-idf-ci-action@v1
