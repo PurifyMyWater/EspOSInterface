@@ -23,7 +23,7 @@ jobs:
             GH_USER_NAME: ${{ vars.PMW_CI_PAT_USERNAME }}
             GHCR_PAT: ${{ secrets.PMW_GHCR_PAT }}
             IDF_DOCKER_IMAGE: ${{ vars.IDF_DOCKER_IMAGE }}
-            IDF_DOCKER_TAG: v5.5-test1
+            IDF_DOCKER_TAG: v5.5-test2
             IDF_TARGET: esp32
 
         steps:
