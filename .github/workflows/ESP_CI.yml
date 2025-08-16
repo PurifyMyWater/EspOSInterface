@@ -22,7 +22,7 @@ jobs:
             GHCR_PAT: ${{ secrets.PMW_GHCR_PAT }}
             GH_USER_NAME: vacmg
             IDF_DOCKER_IMAGE: ghcr.io/vacmg/pmw-esp-idf
-            IDF_DOCKER_TAG: release-v5.4
+            IDF_DOCKER_TAG: v5.5-test1
 
         steps:
             -   name: "Checkout repository"
