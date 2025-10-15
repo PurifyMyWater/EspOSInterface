@@ -15,6 +15,9 @@ public:
 
     OSInterface_BinarySemaphore* osCreateBinarySemaphore() override;
 
+    OSInterface_Timer* osCreateTimer(uint32_t period, OSInterface_Timer::Mode mode, OSInterfaceProcess callback,
+        void* callbackArg, const char* timerName) override;
+
     void* osMalloc(uint32_t size) override;
 
     void osFree(void* ptr) override;
