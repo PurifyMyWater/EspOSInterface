@@ -1,4 +1,5 @@
-idf_component_register(SRCS "EspOSInterface.cpp"
+file(GLOB sources "./*.cpp" "./*.c")
+idf_component_register(SRCS ${sources}
                     INCLUDE_DIRS "include")
 
 include(FetchContent)
