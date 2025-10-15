@@ -1,6 +1,7 @@
 #include "EspOSInterface.h"
 #include "EspBinarySemaphore.h"
 #include "EspMutex.h"
+#include "EspTimer.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -24,6 +25,12 @@ OSInterface_Mutex* EspOSInterface::osCreateMutex()
 OSInterface_BinarySemaphore* EspOSInterface::osCreateBinarySemaphore()
 {
     return new EspBinarySemaphore();
+}
+
+OSInterface_Timer* EspOSInterface::osCreateTimer(const uint32_t period, const OSInterface_Timer::Mode mode,
+    const OSInterfaceProcess callback, void* callbackArg, const char* timerName)
+{
+    return new EspTimer(period, mode, callback, callbackArg, timerName);
 }
 
 void* EspOSInterface::osMalloc(const uint32_t size)
