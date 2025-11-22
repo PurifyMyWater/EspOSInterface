@@ -5,9 +5,9 @@
 #ifndef TEST_PROJECT_ESPUNTYPEDQUEUE_H
 #define TEST_PROJECT_ESPUNTYPEDQUEUE_H
 
-#include "OSInterface.h"
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
+#include "OSInterface.h"
 
 class EspUntypedQueue final : public OSInterface_UntypedQueue
 {
@@ -27,6 +27,7 @@ public:
     bool     sendToBackFromISR(const void* message) override;
     bool     sendToFront(const void* message, uint32_t maxTimeToWait_ms) override;
     bool     sendToFrontFromISR(const void* message) override;
+
 private:
     QueueHandle_t queue;
 };

@@ -51,7 +51,7 @@ bool EspUntypedQueue::sendToBack(const void* message, uint32_t maxTimeToWait_ms)
 bool EspUntypedQueue::sendToBackFromISR(const void* message)
 {
     BaseType_t higherPriorityTaskWoken = pdFALSE;
-    BaseType_t res = xQueueSendToBackFromISR(queue, message, &higherPriorityTaskWoken);
+    BaseType_t res                     = xQueueSendToBackFromISR(queue, message, &higherPriorityTaskWoken);
     portYIELD_FROM_ISR(higherPriorityTaskWoken);
     return res == pdTRUE;
 }
