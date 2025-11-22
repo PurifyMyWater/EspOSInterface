@@ -18,17 +18,31 @@ void EspOSInterface::osSleep(const uint32_t ms)
 
 OSInterface_Mutex* EspOSInterface::osCreateMutex()
 {
-    return new EspMutex();
+    bool               result;
+    OSInterface_Mutex* mutex = new EspMutex(result);
+    if (!result)
+    {
+        delete mutex;
+        return nullptr;
+    }
+    return mutex;
 }
 
 OSInterface_BinarySemaphore* EspOSInterface::osCreateBinarySemaphore()
 {
-    return new EspBinarySemaphore();
+    bool                         result;
+    OSInterface_BinarySemaphore* semaphore = new EspBinarySemaphore(result);
+    if (!result)
+    {
+        delete semaphore;
+        return nullptr;
+    }
+    return semaphore;
 }
 
 void* EspOSInterface::osMalloc(const uint32_t size)
 {
-    return heap_caps_malloc_prefer(size, 2,MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM, MALLOC_CAP_8BIT | MALLOC_CAP_DEFAULT);
+    return heap_caps_malloc_prefer(size, 2, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM, MALLOC_CAP_8BIT | MALLOC_CAP_DEFAULT);
 }
 
 void EspOSInterface::osFree(void* ptr)
@@ -44,8 +58,8 @@ void EspOSInterface::osRunProcess(const OSInterfaceProcess process, void* arg)
 void EspOSInterface::osRunProcess(const OSInterfaceProcess process, const char* processName, void* arg)
 {
     ProcessData* processData = new ProcessData{.process = process, .arg = arg, .processName = processName};
-    const auto res = xTaskCreate(osRunProcessLauncher, processName, processDefaultStackSize, processData, processDefaultPriority,
-                nullptr);
+    const auto   res         = xTaskCreate(osRunProcessLauncher, processName, processDefaultStackSize, processData,
+                                           processDefaultPriority, nullptr);
     if (res != pdPASS)
     {
         OSInterfaceLogError("EspOSInterface", "Failed to create task for process %s", processName);

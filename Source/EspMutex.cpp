@@ -1,14 +1,18 @@
 #include "EspMutex.h"
 #include "EspOSInterfaceLog.h"
 
-EspMutex::EspMutex()
+EspMutex::EspMutex(bool& result)
 {
-    mutex = xSemaphoreCreateMutex();
+    mutex  = xSemaphoreCreateMutex();
+    result = (mutex != nullptr);
 }
 
 EspMutex::~EspMutex()
 {
-    vSemaphoreDelete(mutex);
+    if (mutex != nullptr)
+    {
+        vSemaphoreDelete(mutex);
+    }
 }
 
 void EspMutex::signal()
