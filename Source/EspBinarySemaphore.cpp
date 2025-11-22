@@ -1,14 +1,18 @@
 #include "EspBinarySemaphore.h"
 #include "EspOSInterfaceLog.h"
 
-EspBinarySemaphore::EspBinarySemaphore()
+EspBinarySemaphore::EspBinarySemaphore(bool& result)
 {
     semaphore = xSemaphoreCreateBinary();
+    result    = (semaphore != nullptr);
 }
 
 EspBinarySemaphore::~EspBinarySemaphore()
 {
-    vSemaphoreDelete(semaphore);
+    if (semaphore != nullptr)
+    {
+        vSemaphoreDelete(semaphore);
+    }
 }
 
 void EspBinarySemaphore::signal()

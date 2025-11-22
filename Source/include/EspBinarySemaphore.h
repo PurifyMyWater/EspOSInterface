@@ -1,13 +1,13 @@
 #ifndef ESPBINARYSEMAPHORE_H
 #define ESPBINARYSEMAPHORE_H
 
-#include "EspOSInterface.h"
+#include "OSInterface.h"
 #include <freertos/FreeRTOS.h>
 
 class EspBinarySemaphore final : public OSInterface_BinarySemaphore
 {
 public:
-    EspBinarySemaphore();
+    EspBinarySemaphore(bool& result);
 
     ~EspBinarySemaphore() override;
 
