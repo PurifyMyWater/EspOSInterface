@@ -1,8 +1,8 @@
 #ifndef ESPMUTEX_H
 #define ESPMUTEX_H
 
-#include "OSInterface.h"
 #include <freertos/FreeRTOS.h>
+#include "OSInterface.h"
 
 class EspMutex final : public OSInterface_Mutex
 {
@@ -19,5 +19,4 @@ private:
     SemaphoreHandle_t mutex{};
 };
 
-
-#endif //ESPMUTEX_H
+#endif // ESPMUTEX_H

@@ -1,5 +1,5 @@
-#include <unity.h>
 #include <EspOSInterface.h>
+#include <unity.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -8,8 +8,8 @@ EspOSInterface espOSInterface;
 TEST_CASE("timeTest", "[EspOSInterface]")
 {
     uint32_t timeToSleep = 10;
-    uint32_t repeat = 10;
-    bool flag = false;
+    uint32_t repeat      = 10;
+    bool     flag        = false;
 
     for (uint32_t i = 0; i < repeat; i++)
     {
@@ -76,8 +76,8 @@ TEST_CASE("mutexWait", "[espOSInterface]")
 }
 
 // Task for normal mutex lock test
-static bool secondThreadLocked = false;
-static OSInterface_Mutex* s_mutex = nullptr;
+static bool               secondThreadLocked = false;
+static OSInterface_Mutex* s_mutex            = nullptr;
 
 static void secondMutexTask(void* arg)
 {
@@ -171,8 +171,8 @@ TEST_CASE("binarySemaphoreWaitSignalWait", "[espOSInterface]")
 }
 
 // Task for normal semaphore test
-static bool secondSemLocked = false;
-static OSInterface_BinarySemaphore* s_semaphore = nullptr;
+static bool                         secondSemLocked = false;
+static OSInterface_BinarySemaphore* s_semaphore     = nullptr;
 
 static void secondSemTask(void* arg)
 {
@@ -248,7 +248,7 @@ void runProcessTest(void* arg)
 TEST_CASE("runProcessTest", "[espOSInterface]")
 {
     volatile bool processRun = false;
-    void* arg = (void*) (&processRun);
+    void*         arg        = (void*)(&processRun);
 
     auto millis = espOSInterface.osMillis();
     espOSInterface.osRunProcess(runProcessTest, arg);
