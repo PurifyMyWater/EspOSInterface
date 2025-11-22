@@ -1,10 +1,10 @@
 #include "EspOSInterface.h"
 #include "EspBinarySemaphore.h"
 #include "EspMutex.h"
+#include "EspUntypedQueue.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-
 
 uint32_t EspOSInterface::osMillis()
 {
@@ -24,6 +24,24 @@ OSInterface_Mutex* EspOSInterface::osCreateMutex()
 OSInterface_BinarySemaphore* EspOSInterface::osCreateBinarySemaphore()
 {
     return new EspBinarySemaphore();
+}
+
+OSInterface_Timer* EspOSInterface::osCreateTimer(uint32_t period, OSInterface_Timer::Mode mode,
+                                                 OSInterfaceProcess callback, void* callbackArg, const char* timerName)
+{
+    return nullptr;
+}
+
+OSInterface_UntypedQueue* EspOSInterface::osCreateUntypedQueue(uint32_t maxMessages, uint32_t messageSize)
+{
+    bool             result;
+    EspUntypedQueue* queue = new EspUntypedQueue(maxMessages, messageSize, result);
+    if (!result)
+    {
+        delete queue;
+        return nullptr;
+    }
+    return queue;
 }
 
 void* EspOSInterface::osMalloc(const uint32_t size)
