@@ -1,6 +1,5 @@
-file(GLOB sources "./*.cpp" "./*.c")
-idf_component_register(SRCS ${sources}
-                    INCLUDE_DIRS "include")
+idf_component_register(SRC_DIRS "Source"
+                    INCLUDE_DIRS "Source/include")
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
