@@ -1,4 +1,5 @@
 #include "EspMutex.h"
+#include "EspOSInterfaceLog.h"
 
 EspMutex::EspMutex()
 {

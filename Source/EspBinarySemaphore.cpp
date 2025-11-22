@@ -1,4 +1,5 @@
 #include "EspBinarySemaphore.h"
+#include "EspOSInterfaceLog.h"
 
 EspBinarySemaphore::EspBinarySemaphore()
 {
