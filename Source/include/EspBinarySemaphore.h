@@ -1,8 +1,8 @@
 #ifndef ESPBINARYSEMAPHORE_H
 #define ESPBINARYSEMAPHORE_H
 
-#include "OSInterface.h"
 #include <freertos/FreeRTOS.h>
+#include "OSInterface.h"
 
 class EspBinarySemaphore final : public OSInterface_BinarySemaphore
 {
@@ -19,4 +19,4 @@ private:
     SemaphoreHandle_t semaphore{};
 };
 
-#endif //ESPBINARYSEMAPHORE_H
+#endif // ESPBINARYSEMAPHORE_H
