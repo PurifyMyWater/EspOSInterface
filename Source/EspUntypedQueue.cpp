@@ -2,8 +2,8 @@
 
 EspUntypedQueue::EspUntypedQueue(uint32_t maxMessages, uint32_t messageSize, bool& result)
 {
-    queue  = xQueueCreate(maxMessages, messageSize);
-    result = (queue != nullptr);
+    queue             = xQueueCreate(maxMessages, messageSize);
+    result            = (queue != nullptr);
     this->maxMessages = maxMessages;
 }
 
