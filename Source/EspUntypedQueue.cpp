@@ -4,6 +4,7 @@ EspUntypedQueue::EspUntypedQueue(uint32_t maxMessages, uint32_t messageSize, boo
 {
     queue  = xQueueCreate(maxMessages, messageSize);
     result = (queue != nullptr);
+    this->maxMessages = maxMessages;
 }
 
 EspUntypedQueue::~EspUntypedQueue()
@@ -16,33 +17,38 @@ EspUntypedQueue::~EspUntypedQueue()
 
 uint32_t EspUntypedQueue::length()
 {
-    return 0;
+    return uxQueueMessagesWaiting(queue);
 }
 uint32_t EspUntypedQueue::size()
 {
-    return 0;
+    return maxMessages;
 }
 uint32_t EspUntypedQueue::available()
 {
-    return 0;
+    return uxQueueSpacesAvailable(queue);
 }
 bool EspUntypedQueue::isEmpty()
 {
-    return false;
+    return uxQueueMessagesWaiting(queue) == 0;
 }
 bool EspUntypedQueue::isFull()
 {
-    return false;
+    return uxQueueSpacesAvailable(queue) == 0;
 }
 void EspUntypedQueue::reset()
-{}
+{
+    xQueueReset(queue);
+}
 bool EspUntypedQueue::receive(void* message, uint32_t maxTimeToWait_ms)
 {
-    return false;
+    return xQueueReceive(queue, message, maxTimeToWait_ms) == pdTRUE;
 }
 bool EspUntypedQueue::receiveFromISR(void* message)
 {
-    return false;
+    BaseType_t higherPriorityTaskWoken = pdFALSE;
+    BaseType_t res                     = xQueueReceiveFromISR(queue, message, &higherPriorityTaskWoken);
+    portYIELD_FROM_ISR(higherPriorityTaskWoken);
+    return res == pdTRUE;
 }
 bool EspUntypedQueue::sendToBack(const void* message, uint32_t maxTimeToWait_ms)
 {
@@ -57,9 +63,12 @@ bool EspUntypedQueue::sendToBackFromISR(const void* message)
 }
 bool EspUntypedQueue::sendToFront(const void* message, uint32_t maxTimeToWait_ms)
 {
-    return false;
+    return xQueueSendToFront(queue, message, pdMS_TO_TICKS(maxTimeToWait_ms)) == pdTRUE;
 }
 bool EspUntypedQueue::sendToFrontFromISR(const void* message)
 {
-    return false;
+    BaseType_t higherPriorityTaskWoken = pdFALSE;
+    BaseType_t res                     = xQueueSendToFrontFromISR(queue, message, &higherPriorityTaskWoken);
+    portYIELD_FROM_ISR(higherPriorityTaskWoken);
+    return res == pdTRUE;
 }

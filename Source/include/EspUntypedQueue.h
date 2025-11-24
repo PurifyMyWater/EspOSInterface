@@ -29,7 +29,8 @@ public:
     bool     sendToFrontFromISR(const void* message) override;
 
 private:
-    QueueHandle_t queue;
+    QueueHandle_t   queue;
+    uint32_t        maxMessages;
 };
 
 #endif // TEST_PROJECT_ESPUNTYPEDQUEUE_H
