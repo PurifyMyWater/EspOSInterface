@@ -265,7 +265,7 @@ TEST_CASE("runProcessTest", "[espOSInterface]")
 
 TEST_CASE("untypedQueueSendReceive", "[espOSInterface]")
 {
-    bool            *created;
+    bool            created;
     EspUntypedQueue queue(1, sizeof(uint32_t), created);
     uint32_t        itemToSend    = 123;
     uint32_t        itemToReceive = 0;
@@ -279,7 +279,7 @@ TEST_CASE("untypedQueueSendReceive", "[espOSInterface]")
 
 TEST_CASE("untypedQueueSendFull", "[espOSInterface]")
 {
-    bool            *created;
+    bool            created;
     EspUntypedQueue queue(1, sizeof(uint32_t), created);
     uint32_t        item = 123;
 
@@ -289,7 +289,7 @@ TEST_CASE("untypedQueueSendFull", "[espOSInterface]")
 
 TEST_CASE("untypedQueueReceiveEmpty", "[espOSInterface]")
 {
-    bool            *created;
+    bool            created;
     EspUntypedQueue queue(1, sizeof(uint32_t), created);
     uint32_t        item = 0;
 
@@ -298,7 +298,7 @@ TEST_CASE("untypedQueueReceiveEmpty", "[espOSInterface]")
 
 TEST_CASE("untypedQueueCount", "[espOSInterface]")
 {
-    bool            *created;
+    bool            created;
     EspUntypedQueue queue(5, sizeof(uint32_t), created);
     uint32_t        item = 123;
 
