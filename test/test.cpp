@@ -265,29 +265,32 @@ TEST_CASE("runProcessTest", "[espOSInterface]")
 
 TEST_CASE("untypedQueueSendReceive", "[espOSInterface]")
 {
-    EspUntypedQueue queue(1, sizeof(uint32_t));
+    bool            created = false;
+    EspUntypedQueue queue(1, sizeof(uint32_t), &created);
     uint32_t        itemToSend    = 123;
     uint32_t        itemToReceive = 0;
 
-    TEST_ASSERT_TRUE(queue.send(&itemToSend, 10));
-    TEST_ASSERT_EQUAL(1, queue.count());
+    TEST_ASSERT_TRUE(queue.sendToBack(&itemToSend, 10));
+    TEST_ASSERT_EQUAL(1, queue.length());
     TEST_ASSERT_TRUE(queue.receive(&itemToReceive, 10));
     TEST_ASSERT_EQUAL(itemToSend, itemToReceive);
-    TEST_ASSERT_EQUAL(0, queue.count());
+    TEST_ASSERT_EQUAL(0, queue.length());
 }
 
 TEST_CASE("untypedQueueSendFull", "[espOSInterface]")
 {
-    EspUntypedQueue queue(1, sizeof(uint32_t));
+    bool            created = false;
+    EspUntypedQueue queue(1, sizeof(uint32_t), &created);
     uint32_t        item = 123;
 
-    TEST_ASSERT_TRUE(queue.send(&item, 10));
-    TEST_ASSERT_FALSE(queue.send(&item, 10)); // Queue is full
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 10));
+    TEST_ASSERT_FALSE(queue.sendToBack(&item, 10)); // Queue is full
 }
 
 TEST_CASE("untypedQueueReceiveEmpty", "[espOSInterface]")
 {
-    EspUntypedQueue queue(1, sizeof(uint32_t));
+    bool            created = false;
+    EspUntypedQueue queue(1, sizeof(uint32_t), &created);
     uint32_t        item = 0;
 
     TEST_ASSERT_FALSE(queue.receive(&item, 10)); // Queue is empty
@@ -295,18 +298,19 @@ TEST_CASE("untypedQueueReceiveEmpty", "[espOSInterface]")
 
 TEST_CASE("untypedQueueCount", "[espOSInterface]")
 {
-    EspUntypedQueue queue(5, sizeof(uint32_t));
+    bool            created = false;
+    EspUntypedQueue queue(5, sizeof(uint32_t), &created);
     uint32_t        item = 123;
 
-    TEST_ASSERT_EQUAL(0, queue.count());
-    queue.send(&item, 10);
-    TEST_ASSERT_EQUAL(1, queue.count());
-    queue.send(&item, 10);
-    TEST_ASSERT_EQUAL(2, queue.count());
+    TEST_ASSERT_EQUAL(0, queue.length());
+    queue.sendToBack(&item, 10);
+    TEST_ASSERT_EQUAL(1, queue.length());
+    queue.sendToBack(&item, 10);
+    TEST_ASSERT_EQUAL(2, queue.length());
 
     uint32_t receivedItem;
     queue.receive(&receivedItem, 10);
-    TEST_ASSERT_EQUAL(1, queue.count());
+    TEST_ASSERT_EQUAL(1, queue.length());
     queue.receive(&receivedItem, 10);
-    TEST_ASSERT_EQUAL(0, queue.count());
+    TEST_ASSERT_EQUAL(0, queue.length());
 }
