@@ -1,4 +1,5 @@
 #include <EspOSInterface.h>
+#include <EspUntypedQueue.h>
 #include <unity.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -258,4 +259,54 @@ TEST_CASE("runProcessTest", "[espOSInterface]")
         vTaskDelay(pdMS_TO_TICKS(10));
     }
     TEST_ASSERT_TRUE(processRun);
+}
+
+// **** Untyped Queue Tests ****
+
+TEST_CASE("untypedQueueSendReceive", "[espOSInterface]")
+{
+    EspUntypedQueue queue(1, sizeof(uint32_t));
+    uint32_t        itemToSend    = 123;
+    uint32_t        itemToReceive = 0;
+
+    TEST_ASSERT_TRUE(queue.send(&itemToSend, 10));
+    TEST_ASSERT_EQUAL(1, queue.count());
+    TEST_ASSERT_TRUE(queue.receive(&itemToReceive, 10));
+    TEST_ASSERT_EQUAL(itemToSend, itemToReceive);
+    TEST_ASSERT_EQUAL(0, queue.count());
+}
+
+TEST_CASE("untypedQueueSendFull", "[espOSInterface]")
+{
+    EspUntypedQueue queue(1, sizeof(uint32_t));
+    uint32_t        item = 123;
+
+    TEST_ASSERT_TRUE(queue.send(&item, 10));
+    TEST_ASSERT_FALSE(queue.send(&item, 10)); // Queue is full
+}
+
+TEST_CASE("untypedQueueReceiveEmpty", "[espOSInterface]")
+{
+    EspUntypedQueue queue(1, sizeof(uint32_t));
+    uint32_t        item = 0;
+
+    TEST_ASSERT_FALSE(queue.receive(&item, 10)); // Queue is empty
+}
+
+TEST_CASE("untypedQueueCount", "[espOSInterface]")
+{
+    EspUntypedQueue queue(5, sizeof(uint32_t));
+    uint32_t        item = 123;
+
+    TEST_ASSERT_EQUAL(0, queue.count());
+    queue.send(&item, 10);
+    TEST_ASSERT_EQUAL(1, queue.count());
+    queue.send(&item, 10);
+    TEST_ASSERT_EQUAL(2, queue.count());
+
+    uint32_t receivedItem;
+    queue.receive(&receivedItem, 10);
+    TEST_ASSERT_EQUAL(1, queue.count());
+    queue.receive(&receivedItem, 10);
+    TEST_ASSERT_EQUAL(0, queue.count());
 }
