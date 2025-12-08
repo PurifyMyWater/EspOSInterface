@@ -314,3 +314,46 @@ TEST_CASE("untypedQueueCount", "[espOSInterface]")
     queue.receive(&receivedItem, 10);
     TEST_ASSERT_EQUAL(0, queue.length());
 }
+
+TEST_CASE("untypedQueueIsEmpty", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(2, sizeof(uint32_t), created);
+
+    TEST_ASSERT_TRUE(queue.isEmpty());
+}
+
+TEST_CASE("untypedQueueIsFull", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(1, sizeof(uint32_t), created);
+    uint32_t        item = 1;
+
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 0));
+    TEST_ASSERT_TRUE(queue.isFull());
+}
+
+TEST_CASE("untypedQueueAvailable", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(3, sizeof(uint32_t), created);
+    uint32_t        item = 0;
+
+    TEST_ASSERT_EQUAL(3, queue.available());
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 0));
+    TEST_ASSERT_EQUAL(2, queue.available());
+}
+
+TEST_CASE("untypedQueueReset", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(2, sizeof(uint32_t), created);
+    uint32_t        item = 7;
+
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 0));
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 0));
+    TEST_ASSERT_TRUE(queue.isFull());
+    queue.reset();
+    TEST_ASSERT_TRUE(queue.isEmpty());
+    TEST_ASSERT_EQUAL(2, queue.available());
+}
