@@ -41,7 +41,7 @@ void EspUntypedQueue::reset()
 }
 bool EspUntypedQueue::receive(void* message, uint32_t maxTimeToWait_ms)
 {
-    return xQueueReceive(queue, message, maxTimeToWait_ms) == pdTRUE;
+    return xQueueReceive(queue, message, pdMS_TO_TICKS(maxTimeToWait_ms)) == pdTRUE;
 }
 bool EspUntypedQueue::receiveFromISR(void* message)
 {
