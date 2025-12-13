@@ -1,5 +1,6 @@
-#include <unity.h>
 #include <EspOSInterface.h>
+#include <EspUntypedQueue.h>
+#include <unity.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -8,8 +9,8 @@ EspOSInterface espOSInterface;
 TEST_CASE("timeTest", "[EspOSInterface]")
 {
     uint32_t timeToSleep = 10;
-    uint32_t repeat = 10;
-    bool flag = false;
+    uint32_t repeat      = 10;
+    bool     flag        = false;
 
     for (uint32_t i = 0; i < repeat; i++)
     {
@@ -76,8 +77,8 @@ TEST_CASE("mutexWait", "[espOSInterface]")
 }
 
 // Task for normal mutex lock test
-static bool secondThreadLocked = false;
-static OSInterface_Mutex* s_mutex = nullptr;
+static bool               secondThreadLocked = false;
+static OSInterface_Mutex* s_mutex            = nullptr;
 
 static void secondMutexTask(void* arg)
 {
@@ -171,8 +172,8 @@ TEST_CASE("binarySemaphoreWaitSignalWait", "[espOSInterface]")
 }
 
 // Task for normal semaphore test
-static bool secondSemLocked = false;
-static OSInterface_BinarySemaphore* s_semaphore = nullptr;
+static bool                         secondSemLocked = false;
+static OSInterface_BinarySemaphore* s_semaphore     = nullptr;
 
 static void secondSemTask(void* arg)
 {
@@ -248,7 +249,7 @@ void runProcessTest(void* arg)
 TEST_CASE("runProcessTest", "[espOSInterface]")
 {
     volatile bool processRun = false;
-    void* arg = (void*) (&processRun);
+    void*         arg        = (void*)(&processRun);
 
     auto millis = espOSInterface.osMillis();
     espOSInterface.osRunProcess(runProcessTest, arg);
@@ -258,4 +259,101 @@ TEST_CASE("runProcessTest", "[espOSInterface]")
         vTaskDelay(pdMS_TO_TICKS(10));
     }
     TEST_ASSERT_TRUE(processRun);
+}
+
+// **** Untyped Queue Tests ****
+
+TEST_CASE("untypedQueueSendReceive", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(1, sizeof(uint32_t), created);
+    uint32_t        itemToSend    = 123;
+    uint32_t        itemToReceive = 0;
+
+    TEST_ASSERT_TRUE(queue.sendToBack(&itemToSend, 10));
+    TEST_ASSERT_EQUAL(1, queue.length());
+    TEST_ASSERT_TRUE(queue.receive(&itemToReceive, 10));
+    TEST_ASSERT_EQUAL(itemToSend, itemToReceive);
+    TEST_ASSERT_EQUAL(0, queue.length());
+}
+
+TEST_CASE("untypedQueueSendFull", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(1, sizeof(uint32_t), created);
+    uint32_t        item = 123;
+
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 10));
+    TEST_ASSERT_FALSE(queue.sendToBack(&item, 10)); // Queue is full
+}
+
+TEST_CASE("untypedQueueReceiveEmpty", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(1, sizeof(uint32_t), created);
+    uint32_t        item = 0;
+
+    TEST_ASSERT_FALSE(queue.receive(&item, 10)); // Queue is empty
+}
+
+TEST_CASE("untypedQueueCount", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(5, sizeof(uint32_t), created);
+    uint32_t        item = 123;
+
+    TEST_ASSERT_EQUAL(0, queue.length());
+    queue.sendToBack(&item, 10);
+    TEST_ASSERT_EQUAL(1, queue.length());
+    queue.sendToBack(&item, 10);
+    TEST_ASSERT_EQUAL(2, queue.length());
+
+    uint32_t receivedItem;
+    queue.receive(&receivedItem, 10);
+    TEST_ASSERT_EQUAL(1, queue.length());
+    queue.receive(&receivedItem, 10);
+    TEST_ASSERT_EQUAL(0, queue.length());
+}
+
+TEST_CASE("untypedQueueIsEmpty", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(2, sizeof(uint32_t), created);
+
+    TEST_ASSERT_TRUE(queue.isEmpty());
+}
+
+TEST_CASE("untypedQueueIsFull", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(1, sizeof(uint32_t), created);
+    uint32_t        item = 1;
+
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 0));
+    TEST_ASSERT_TRUE(queue.isFull());
+}
+
+TEST_CASE("untypedQueueAvailable", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(3, sizeof(uint32_t), created);
+    uint32_t        item = 0;
+
+    TEST_ASSERT_EQUAL(3, queue.available());
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 0));
+    TEST_ASSERT_EQUAL(2, queue.available());
+}
+
+TEST_CASE("untypedQueueReset", "[espOSInterface]")
+{
+    bool            created;
+    EspUntypedQueue queue(2, sizeof(uint32_t), created);
+    uint32_t        item = 7;
+
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 0));
+    TEST_ASSERT_TRUE(queue.sendToBack(&item, 0));
+    TEST_ASSERT_TRUE(queue.isFull());
+    queue.reset();
+    TEST_ASSERT_TRUE(queue.isEmpty());
+    TEST_ASSERT_EQUAL(2, queue.available());
 }
