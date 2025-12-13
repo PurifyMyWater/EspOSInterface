@@ -7,7 +7,7 @@ set(FETCHCONTENT_QUIET OFF)
 FetchContent_Declare(
         OSInterface
         GIT_REPOSITORY  git@github.com:vacmg/OSInterface.git
-        GIT_TAG         Add_OSInterface_MessageQueue_V2 # TODO: merge & release OSInterface before using a stable tag
+        GIT_TAG         v0.0.1
 )
 FetchContent_MakeAvailable(OSInterface)
 
