@@ -1,7 +1,6 @@
 #ifndef OSESPINTERFACE_H
 #define OSESPINTERFACE_H
 
-#include "EspOSInterfaceLog.h"
 #include "OSInterface.h"
 
 class EspOSInterface : public OSInterface
@@ -16,9 +15,9 @@ public:
     OSInterface_BinarySemaphore* osCreateBinarySemaphore() override;
 
     OSInterface_Timer* osCreateTimer(uint32_t period, OSInterface_Timer::Mode mode, OSInterfaceProcess callback,
-                                     void* callbackArg, const char* timerName);
+                                     void* callbackArg, const char* timerName) override;
 
-    OSInterface_UntypedQueue* osCreateUntypedQueue(uint32_t maxMessages, uint32_t messageSize);
+    OSInterface_UntypedQueue* osCreateUntypedQueue(uint32_t maxMessages, uint32_t messageSize) override;
 
     void* osMalloc(uint32_t size) override;
 

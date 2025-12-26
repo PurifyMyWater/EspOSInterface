@@ -2,6 +2,7 @@
 #define ESPOSINTERFACELOG_H
 
 #include "esp_log.h"
+#include "OSInterface.h"
 
 #ifdef OSInterfaceLogVerbose
     #undef OSInterfaceLogVerbose
