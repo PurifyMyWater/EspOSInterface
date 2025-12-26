@@ -7,7 +7,7 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
-#include "OSInterface.h"
+#include "OSInterface_UntypedQueue.h"
 
 class EspUntypedQueue final : public OSInterface_UntypedQueue
 {
