@@ -7,7 +7,7 @@
 class EspBinarySemaphore final : public OSInterface_BinarySemaphore
 {
 public:
-    EspBinarySemaphore(bool& result);
+    explicit EspBinarySemaphore(bool& result);
 
     ~EspBinarySemaphore() override;
 

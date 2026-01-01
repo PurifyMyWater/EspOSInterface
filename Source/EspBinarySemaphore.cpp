@@ -1,5 +1,5 @@
-#include "EspBinarySemaphore.h"
 #include "EspOSInterfaceLog.h"
+#include "EspBinarySemaphore.h"
 
 EspBinarySemaphore::EspBinarySemaphore(bool& result)
 {
@@ -20,7 +20,7 @@ void EspBinarySemaphore::signal()
     if (xSemaphoreGive(semaphore) == pdFALSE)
     {
         // Crash if we can't give the semaphore.
-        OSInterfaceLogError("EspOSInterface", "Failed to give semaphore");
+        OSInterfaceLogError(EspOSInterfaceLogTag, "Failed to give semaphore");
         abort();
     }
 }

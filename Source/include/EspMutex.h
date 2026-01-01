@@ -7,7 +7,7 @@
 class EspMutex final : public OSInterface_Mutex
 {
 public:
-    EspMutex(bool& result);
+    explicit EspMutex(bool& result);
 
     ~EspMutex() override;
 
