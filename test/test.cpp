@@ -1,7 +1,7 @@
 #include <EspOSInterface.h>
 #include <EspUntypedQueue.h>
 #include <unity.h>
-#include "freertos/FreeRTOS.h"
+#include "esp_log.h"
 #include "freertos/task.h"
 
 EspOSInterface espOSInterface;
@@ -31,21 +31,21 @@ TEST_CASE("timeTest", "[EspOSInterface]")
     }
 }
 
-TEST_CASE("osMallocSimpleAlloc", "[espOSInterface]")
+TEST_CASE("osMallocSimpleAlloc", "[EspOSInterface]")
 {
     void* ptr = espOSInterface.osMalloc(100);
     TEST_ASSERT_NOT_NULL(ptr);
     espOSInterface.osFree(ptr);
 }
 
-TEST_CASE("osMallocZeroAlloc", "[espOSInterface]")
+TEST_CASE("osMallocZeroAlloc", "[EspOSInterface]")
 {
     void* ptr = espOSInterface.osMalloc(0);
     TEST_ASSERT_NULL(ptr);
     espOSInterface.osFree(ptr);
 }
 
-TEST_CASE("osMallocLargeAlloc", "[espOSInterface]")
+TEST_CASE("osMallocLargeAlloc", "[EspOSInterface]")
 {
     void* ptr = espOSInterface.osMalloc(1024 * 100);
     ESP_LOGE("TEST", "XXX large ptr: %p", ptr);
@@ -53,7 +53,7 @@ TEST_CASE("osMallocLargeAlloc", "[espOSInterface]")
     espOSInterface.osFree(ptr);
 }
 
-TEST_CASE("osMallocMultipleAlloc", "[espOSInterface]")
+TEST_CASE("osMallocMultipleAlloc", "[EspOSInterface]")
 {
     void* ptr1 = espOSInterface.osMalloc(100);
     void* ptr2 = espOSInterface.osMalloc(100);
@@ -68,7 +68,7 @@ TEST_CASE("osMallocMultipleAlloc", "[espOSInterface]")
 
 // **** Mutex Tests ****
 
-TEST_CASE("mutexWait", "[espOSInterface]")
+TEST_CASE("mutexWait", "[EspMutex]")
 {
     OSInterface_Mutex* mutex = espOSInterface.osCreateMutex();
     TEST_ASSERT_NOT_NULL(mutex);
@@ -90,7 +90,7 @@ static void secondMutexTask(void* arg)
     vTaskDelete(nullptr);
 }
 
-TEST_CASE("mutexTestNormal", "[espOSInterface]")
+TEST_CASE("mutexTestNormal", "[EspMutex]")
 {
     s_mutex = espOSInterface.osCreateMutex();
     TEST_ASSERT_NOT_NULL(s_mutex);
@@ -123,7 +123,7 @@ static void secondMutexTimeoutTask(void* arg)
     vTaskDelete(nullptr);
 }
 
-TEST_CASE("mutexTestTimeout", "[espOSInterface]")
+TEST_CASE("mutexTestTimeout", "[EspMutex]")
 {
     s_mutex = espOSInterface.osCreateMutex();
     TEST_ASSERT_NOT_NULL(s_mutex);
@@ -144,7 +144,7 @@ TEST_CASE("mutexTestTimeout", "[espOSInterface]")
 
 // **** Binary Semaphore Tests ****
 
-TEST_CASE("binarySemaphoreInit", "[espOSInterface]")
+TEST_CASE("binarySemaphoreInit", "[EspBinarySemaphore]")
 {
     OSInterface_BinarySemaphore* semaphore = espOSInterface.osCreateBinarySemaphore();
     TEST_ASSERT_NOT_NULL(semaphore);
@@ -152,7 +152,7 @@ TEST_CASE("binarySemaphoreInit", "[espOSInterface]")
     delete semaphore;
 }
 
-TEST_CASE("binarySemaphoreWaitSignal", "[espOSInterface]")
+TEST_CASE("binarySemaphoreWaitSignal", "[EspBinarySemaphore]")
 {
     OSInterface_BinarySemaphore* semaphore = espOSInterface.osCreateBinarySemaphore();
     TEST_ASSERT_NOT_NULL(semaphore);
@@ -161,7 +161,7 @@ TEST_CASE("binarySemaphoreWaitSignal", "[espOSInterface]")
     delete semaphore;
 }
 
-TEST_CASE("binarySemaphoreWaitSignalWait", "[espOSInterface]")
+TEST_CASE("binarySemaphoreWaitSignalWait", "[EspBinarySemaphore]")
 {
     OSInterface_BinarySemaphore* semaphore = espOSInterface.osCreateBinarySemaphore();
     TEST_ASSERT_NOT_NULL(semaphore);
@@ -185,7 +185,7 @@ static void secondSemTask(void* arg)
     vTaskDelete(nullptr);
 }
 
-TEST_CASE("semaphoreTestNormal", "[espOSInterface]")
+TEST_CASE("semaphoreTestNormal", "[EspBinarySemaphore]")
 {
     s_semaphore = espOSInterface.osCreateBinarySemaphore();
     TEST_ASSERT_NOT_NULL(s_semaphore);
@@ -219,7 +219,7 @@ static void secondSemTimeoutTask(void* arg)
     vTaskDelete(nullptr);
 }
 
-TEST_CASE("semaphoreTestTimeout", "[espOSInterface]")
+TEST_CASE("semaphoreTestTimeout", "[EspBinarySemaphore]")
 {
     s_semaphore = espOSInterface.osCreateBinarySemaphore();
     TEST_ASSERT_NOT_NULL(s_semaphore);
@@ -246,7 +246,7 @@ void runProcessTest(void* arg)
     *processRun = true;
 }
 
-TEST_CASE("runProcessTest", "[espOSInterface]")
+TEST_CASE("runProcessTest", "[EspOSInterface]")
 {
     volatile bool processRun = false;
     void*         arg        = (void*)(&processRun);
@@ -263,7 +263,7 @@ TEST_CASE("runProcessTest", "[espOSInterface]")
 
 // **** Untyped Queue Tests ****
 
-TEST_CASE("untypedQueueSendReceive", "[espOSInterface]")
+TEST_CASE("untypedQueueSendReceive", "[EspUntypedQueue]")
 {
     bool            created;
     EspUntypedQueue queue(1, sizeof(uint32_t), created);
@@ -277,7 +277,7 @@ TEST_CASE("untypedQueueSendReceive", "[espOSInterface]")
     TEST_ASSERT_EQUAL(0, queue.length());
 }
 
-TEST_CASE("untypedQueueSendFull", "[espOSInterface]")
+TEST_CASE("untypedQueueSendFull", "[EspUntypedQueue]")
 {
     bool            created;
     EspUntypedQueue queue(1, sizeof(uint32_t), created);
@@ -287,7 +287,7 @@ TEST_CASE("untypedQueueSendFull", "[espOSInterface]")
     TEST_ASSERT_FALSE(queue.sendToBack(&item, 10)); // Queue is full
 }
 
-TEST_CASE("untypedQueueReceiveEmpty", "[espOSInterface]")
+TEST_CASE("untypedQueueReceiveEmpty", "[EspUntypedQueue]")
 {
     bool            created;
     EspUntypedQueue queue(1, sizeof(uint32_t), created);
@@ -296,7 +296,7 @@ TEST_CASE("untypedQueueReceiveEmpty", "[espOSInterface]")
     TEST_ASSERT_FALSE(queue.receive(&item, 10)); // Queue is empty
 }
 
-TEST_CASE("untypedQueueCount", "[espOSInterface]")
+TEST_CASE("untypedQueueCount", "[EspUntypedQueue]")
 {
     bool            created;
     EspUntypedQueue queue(5, sizeof(uint32_t), created);
@@ -315,7 +315,7 @@ TEST_CASE("untypedQueueCount", "[espOSInterface]")
     TEST_ASSERT_EQUAL(0, queue.length());
 }
 
-TEST_CASE("untypedQueueIsEmpty", "[espOSInterface]")
+TEST_CASE("untypedQueueIsEmpty", "[EspUntypedQueue]")
 {
     bool            created;
     EspUntypedQueue queue(2, sizeof(uint32_t), created);
@@ -323,7 +323,7 @@ TEST_CASE("untypedQueueIsEmpty", "[espOSInterface]")
     TEST_ASSERT_TRUE(queue.isEmpty());
 }
 
-TEST_CASE("untypedQueueIsFull", "[espOSInterface]")
+TEST_CASE("untypedQueueIsFull", "[EspUntypedQueue]")
 {
     bool            created;
     EspUntypedQueue queue(1, sizeof(uint32_t), created);
@@ -333,7 +333,7 @@ TEST_CASE("untypedQueueIsFull", "[espOSInterface]")
     TEST_ASSERT_TRUE(queue.isFull());
 }
 
-TEST_CASE("untypedQueueAvailable", "[espOSInterface]")
+TEST_CASE("untypedQueueAvailable", "[EspUntypedQueue]")
 {
     bool            created;
     EspUntypedQueue queue(3, sizeof(uint32_t), created);
@@ -344,7 +344,7 @@ TEST_CASE("untypedQueueAvailable", "[espOSInterface]")
     TEST_ASSERT_EQUAL(2, queue.available());
 }
 
-TEST_CASE("untypedQueueReset", "[espOSInterface]")
+TEST_CASE("untypedQueueReset", "[EspUntypedQueue]")
 {
     bool            created;
     EspUntypedQueue queue(2, sizeof(uint32_t), created);
@@ -356,4 +356,174 @@ TEST_CASE("untypedQueueReset", "[espOSInterface]")
     queue.reset();
     TEST_ASSERT_TRUE(queue.isEmpty());
     TEST_ASSERT_EQUAL(2, queue.available());
+}
+
+// **** Timer Tests ****
+
+void timerCallback(void* arg)
+{
+    volatile int* called = static_cast<int*>(arg);
+    if (called != nullptr)
+    {
+        *called += 1;
+    }
+}
+
+TEST_CASE("espTimerStartOneShot", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerStartPeriodic", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::PERIODIC, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(2, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerStopOneShot", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    TEST_ASSERT_TRUE(timer->stop());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(0, called);
+}
+
+TEST_CASE("espTimerStopPeriodic", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::PERIODIC, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    TEST_ASSERT_TRUE(timer->stop());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerIsRunning", "[EspTimer]")
+{
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, nullptr, "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_FALSE(timer->isRunning());
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(10);
+    TEST_ASSERT_TRUE(timer->isRunning());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_FALSE(timer->isRunning());
+    espOSInterface.osSleep(110);
+    delete timer;
+}
+
+TEST_CASE("espTimerSetPeriod", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    TEST_ASSERT_TRUE(timer->setPeriod(200));
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(2, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerGetPeriod", "[EspTimer]")
+{
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, nullptr, "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_EQUAL(100, timer->getPeriod());
+    TEST_ASSERT_TRUE(timer->setPeriod(200));
+    espOSInterface.osSleep(10);
+    TEST_ASSERT_EQUAL(200, timer->getPeriod());
+    delete timer;
+}
+
+TEST_CASE("espTimerGetMode", "[EspTimer]")
+{
+    OSInterface_Timer* timer;
+
+    timer = espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, nullptr, "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_EQUAL(OSInterface_Timer::ONE_SHOT, timer->getMode());
+    delete timer;
+
+    timer = espOSInterface.osCreateTimer(100, OSInterface_Timer::PERIODIC, timerCallback, nullptr, "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_EQUAL(OSInterface_Timer::PERIODIC, timer->getMode());
+    delete timer;
+}
+
+TEST_CASE("espTimerGetTimeout", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(20);
+    uint32_t timeout = timer->getTimeout();
+    espOSInterface.osSleep(timeout - 10);
+    TEST_ASSERT_EQUAL(0, called);
+    espOSInterface.osSleep(20);
+    TEST_ASSERT_EQUAL(1, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerGetTimeoutTime", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(20);
+    uint32_t timeoutTime = timer->getTimeoutTime();
+    TEST_ASSERT_UINT32_WITHIN(10, espOSInterface.osMillis() + 80, timeoutTime);
+    while (called == 0 && espOSInterface.osMillis() < timeoutTime + 10)
+    {
+        espOSInterface.osSleep(10);
+    }
+    TEST_ASSERT_EQUAL(1, called);
+    delete timer;
 }
