@@ -13,7 +13,7 @@ class EspUntypedQueue final : public OSInterface_UntypedQueue
 {
 public:
     EspUntypedQueue(uint32_t maxMessages, uint32_t messageSize, bool& result);
-    ~EspUntypedQueue();
+    ~EspUntypedQueue() override;
 
     uint32_t length() override;
     uint32_t size() override;
