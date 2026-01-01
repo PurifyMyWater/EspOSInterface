@@ -9,13 +9,13 @@ void EspTimer::callbackWrapper(TimerHandle_t xTimer)
     }
 }
 
-EspTimer::EspTimer(const char* const pcTimerName, const uint32_t timerPeriod, const OSInterface_Timer::Mode mode,
+EspTimer::EspTimer(const char* const pcTimerName, const uint32_t timerPeriod, const Mode mode,
                    OSInterfaceProcess callback, void* callbackArgs, bool& result)
 {
     this->callbackFunction = callback;
     this->callbackArgs     = callbackArgs;
     this->timer            = xTimerCreate(pcTimerName, pdMS_TO_TICKS(timerPeriod),
-                               mode == OSInterface_Timer::PERIODIC ? pdTRUE : pdFALSE, this, callbackWrapper);
+                               mode == Mode::PERIODIC ? pdTRUE : pdFALSE, this, callbackWrapper);
     result                 = (this->timer != nullptr);
 }
 

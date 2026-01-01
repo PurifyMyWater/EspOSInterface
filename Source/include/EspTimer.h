@@ -8,7 +8,7 @@
 class EspTimer final : public OSInterface_Timer
 {
 public:
-    EspTimer(const char* pcTimerName, uint32_t TimerPeriod, OSInterface_Timer::Mode mode,
+    EspTimer(const char* pcTimerName, uint32_t timerPeriod, Mode mode,
              OSInterfaceProcess callback, void* callbackArgs, bool& result);
 
     ~EspTimer() override;
