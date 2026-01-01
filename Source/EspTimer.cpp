@@ -1,9 +1,19 @@
 #include "EspTimer.h"
 
-EspTimer::EspTimer(const char* const pcTimerName, const TickType_t xTimerPeriod, const BaseType_t xAutoReload,
-                   void* const pvTimerID, TimerCallbackFunction_t pxCallbackFunction, bool& result)
+void EspTimer::callbackWrapper(TimerHandle_t xTimer)
 {
-    timer  = xTimerCreate(pcTimerName, xTimerPeriod, xAutoReload, pvTimerID, pxCallbackFunction);
+    EspTimer* espTimer = static_cast<EspTimer*>(pvTimerGetTimerID(xTimer));
+    if (espTimer != nullptr && espTimer->callbackFunction != nullptr)
+    {
+        espTimer->callbackFunction(espTimer->callbackArgs);
+    }
+}
+
+EspTimer::EspTimer(const char* const pcTimerName, const uint32_t timerPeriod, const OSInterface_Timer::Mode mode,
+                   OSInterfaceProcess callback, void* callbackArgs, bool& result)
+{
+    timer  = xTimerCreate(pcTimerName, pdMS_TO_TICKS(timerPeriod),
+                         mode == OSInterface_Timer::PERIODIC ? pdTRUE : pdFALSE, this, callbackWrapper);
     result = (timer != nullptr);
 }
 

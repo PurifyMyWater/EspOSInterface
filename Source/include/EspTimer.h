@@ -2,13 +2,14 @@
 #define ESPTIMER_H
 
 #include <freertos/FreeRTOS.h>
+#include "OSInterface.h"
 #include "OSInterface_Timer.h"
 
 class EspTimer final : public OSInterface_Timer
 {
 public:
-    EspTimer(const char* pcTimerName, TickType_t xTimerPeriod, BaseType_t xAutoReload, void* pvTimerID,
-             TimerCallbackFunction_t pxCallbackFunction, bool& result);
+    EspTimer(const char* pcTimerName, uint32_t TimerPeriod, OSInterface_Timer::Mode mode,
+             OSInterfaceProcess callback, void* callbackArgs, bool& result);
 
     ~EspTimer() override;
 
@@ -36,6 +37,11 @@ public:
 
 private:
     TimerHandle_t timer{};
+
+    OSInterfaceProcess callbackFunction{};
+    void*              callbackArgs{};
+
+    static void callbackWrapper(TimerHandle_t xTimer);
 };
 
 #endif // ESPTIMER_H
