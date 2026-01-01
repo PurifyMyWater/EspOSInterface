@@ -1,8 +1,8 @@
 #include <EspOSInterface.h>
 #include <EspUntypedQueue.h>
 #include <unity.h>
-#include "freertos/task.h"
 #include "esp_log.h"
+#include "freertos/task.h"
 
 EspOSInterface espOSInterface;
 
@@ -356,4 +356,174 @@ TEST_CASE("untypedQueueReset", "[EspUntypedQueue]")
     queue.reset();
     TEST_ASSERT_TRUE(queue.isEmpty());
     TEST_ASSERT_EQUAL(2, queue.available());
+}
+
+// **** Timer Tests ****
+
+void timerCallback(void* arg)
+{
+    volatile int* called = static_cast<int*>(arg);
+    if (called != nullptr)
+    {
+        *called += 1;
+    }
+}
+
+TEST_CASE("espTimerStartOneShot", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerStartPeriodic", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::PERIODIC, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(2, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerStopOneShot", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    TEST_ASSERT_TRUE(timer->stop());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(0, called);
+}
+
+TEST_CASE("espTimerStopPeriodic", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::PERIODIC, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    TEST_ASSERT_TRUE(timer->stop());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerIsRunning", "[EspTimer]")
+{
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, nullptr, "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_FALSE(timer->isRunning());
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(10);
+    TEST_ASSERT_TRUE(timer->isRunning());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_FALSE(timer->isRunning());
+    espOSInterface.osSleep(110);
+    delete timer;
+}
+
+TEST_CASE("espTimerSetPeriod", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    TEST_ASSERT_TRUE(timer->setPeriod(200));
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(1, called);
+    espOSInterface.osSleep(110);
+    TEST_ASSERT_EQUAL(2, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerGetPeriod", "[EspTimer]")
+{
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, nullptr, "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_EQUAL(100, timer->getPeriod());
+    TEST_ASSERT_TRUE(timer->setPeriod(200));
+    espOSInterface.osSleep(10);
+    TEST_ASSERT_EQUAL(200, timer->getPeriod());
+    delete timer;
+}
+
+TEST_CASE("espTimerGetMode", "[EspTimer]")
+{
+    OSInterface_Timer* timer;
+
+    timer = espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, nullptr, "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_EQUAL(OSInterface_Timer::ONE_SHOT, timer->getMode());
+    delete timer;
+
+    timer = espOSInterface.osCreateTimer(100, OSInterface_Timer::PERIODIC, timerCallback, nullptr, "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_EQUAL(OSInterface_Timer::PERIODIC, timer->getMode());
+    delete timer;
+}
+
+TEST_CASE("espTimerGetTimeout", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(20);
+    uint32_t timeout = timer->getTimeout();
+    espOSInterface.osSleep(timeout - 10);
+    TEST_ASSERT_EQUAL(0, called);
+    espOSInterface.osSleep(20);
+    TEST_ASSERT_EQUAL(1, called);
+    delete timer;
+}
+
+TEST_CASE("espTimerGetTimeoutTime", "[EspTimer]")
+{
+    int                called = 0;
+    OSInterface_Timer* timer =
+        espOSInterface.osCreateTimer(100, OSInterface_Timer::ONE_SHOT, timerCallback, (void*)(&called), "test_timer");
+
+    TEST_ASSERT_NOT_NULL(timer);
+    TEST_ASSERT_TRUE(timer->start());
+    espOSInterface.osSleep(20);
+    uint32_t timeoutTime = timer->getTimeoutTime();
+    TEST_ASSERT_UINT32_WITHIN(10, espOSInterface.osMillis() + 80, timeoutTime);
+    while (called == 0 && espOSInterface.osMillis() < timeoutTime + 10)
+    {
+        espOSInterface.osSleep(10);
+    }
+    TEST_ASSERT_EQUAL(1, called);
+    delete timer;
 }
