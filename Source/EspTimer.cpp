@@ -91,12 +91,7 @@ bool EspTimer::setPeriodFromISR(const uint32_t newPeriod_ms)
 
 [[nodiscard]] uint32_t EspTimer::getTimeout() const
 {
-    int64_t ticksLeft = static_cast<int64_t>(xTimerGetExpiryTime(timer)) - static_cast<int64_t>(xTaskGetTickCount());
-    if (ticksLeft < 0)
-    {
-        ticksLeft = __UINT32_MAX__ - xTaskGetTickCount() + xTimerGetExpiryTime(timer); // Take into account overflow
-    }
-    return pdTICKS_TO_MS(ticksLeft);
+    return pdTICKS_TO_MS(xTimerGetExpiryTime(timer) - xTaskGetTickCount());
 }
 
 [[nodiscard]] uint32_t EspTimer::getTimeoutTime() const
