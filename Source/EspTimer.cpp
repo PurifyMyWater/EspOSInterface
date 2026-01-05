@@ -11,8 +11,8 @@ void EspTimer::callbackWrapper(TimerHandle_t xTimer)
     }
     else
     {
-        OSInterfaceLogWarning(EspOSInterfaceLogTag, "Timer callback invoked but %s %s",
-                              espTimer == nullptr ? "EspTimer instance is null" : "callback function is null for timer",
+        OSInterfaceLogWarning(EspOSInterfaceLogTag, "Timer callback invoked but %s%s",
+                              espTimer == nullptr ? "EspTimer instance is null" : "callback function is null for timer ",
                               espTimer == nullptr ? "" : pcTimerGetName(xTimer));
     }
 }
