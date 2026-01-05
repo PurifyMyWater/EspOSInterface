@@ -2,12 +2,12 @@
 #define ESPMUTEX_H
 
 #include <freertos/FreeRTOS.h>
-#include "OSInterface.h"
+#include "OSInterface_Mutex.h"
 
 class EspMutex final : public OSInterface_Mutex
 {
 public:
-    EspMutex(bool& result);
+    explicit EspMutex(bool& result);
 
     ~EspMutex() override;
 

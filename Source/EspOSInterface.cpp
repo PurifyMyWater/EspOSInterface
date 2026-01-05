@@ -1,6 +1,7 @@
 #include "EspOSInterface.h"
 #include "EspBinarySemaphore.h"
 #include "EspMutex.h"
+#include "EspTimer.h"
 #include "EspUntypedQueue.h"
 
 #include <freertos/FreeRTOS.h>
@@ -22,6 +23,7 @@ OSInterface_Mutex* EspOSInterface::osCreateMutex()
     OSInterface_Mutex* mutex = new EspMutex(result);
     if (!result)
     {
+        OSInterfaceLogError(EspOSInterfaceLogTag, "Failed to create mutex");
         delete mutex;
         return nullptr;
     }
@@ -34,24 +36,35 @@ OSInterface_BinarySemaphore* EspOSInterface::osCreateBinarySemaphore()
     OSInterface_BinarySemaphore* semaphore = new EspBinarySemaphore(result);
     if (!result)
     {
+        OSInterfaceLogError(EspOSInterfaceLogTag, "Failed to create binary semaphore");
         delete semaphore;
         return nullptr;
     }
     return semaphore;
 }
 
-OSInterface_Timer* EspOSInterface::osCreateTimer(uint32_t period, OSInterface_Timer::Mode mode,
-                                                 OSInterfaceProcess callback, void* callbackArg, const char* timerName)
+OSInterface_Timer* EspOSInterface::osCreateTimer(const uint32_t period, const OSInterface_Timer::Mode mode,
+                                                 const OSInterfaceProcess callback, void* callbackArg,
+                                                 const char* timerName)
 {
-    return nullptr;
+    bool               result;
+    OSInterface_Timer* timer = new EspTimer(timerName, period, mode, callback, callbackArg, result);
+    if (!result)
+    {
+        OSInterfaceLogError(EspOSInterfaceLogTag, "Failed to create timer");
+        delete timer;
+        return nullptr;
+    }
+    return timer;
 }
 
-OSInterface_UntypedQueue* EspOSInterface::osCreateUntypedQueue(uint32_t maxMessages, uint32_t messageSize)
+OSInterface_UntypedQueue* EspOSInterface::osCreateUntypedQueue(const uint32_t maxMessages, const uint32_t messageSize)
 {
     bool             result;
     EspUntypedQueue* queue = new EspUntypedQueue(maxMessages, messageSize, result);
     if (!result)
     {
+        OSInterfaceLogError(EspOSInterfaceLogTag, "Failed to create untyped queue");
         delete queue;
         return nullptr;
     }
@@ -80,15 +93,15 @@ void EspOSInterface::osRunProcess(const OSInterfaceProcess process, const char* 
                                            processDefaultPriority, nullptr);
     if (res != pdPASS)
     {
-        OSInterfaceLogError("EspOSInterface", "Failed to create task for process %s", processName);
+        OSInterfaceLogError(EspOSInterfaceLogTag, "Failed to create task for process %s", processName);
         delete processData;
     }
 }
 
 void EspOSInterface::osRunProcessLauncher(void* data)
 {
-    auto* processData = static_cast<ProcessData*>(data);
-    OSInterfaceLogInfo("OSInterface", "Running process %s", processData->processName);
+    const ProcessData* processData = static_cast<ProcessData*>(data);
+    OSInterfaceLogInfo(EspOSInterfaceLogTag, "Running process %s", processData->processName);
     processData->process(processData->arg);
     delete processData;
     vTaskDelete(nullptr);

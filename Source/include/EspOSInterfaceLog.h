@@ -3,39 +3,36 @@
 
 #include "esp_log.h"
 
-#ifdef OSInterfaceLogVerbose
-    #undef OSInterfaceLogVerbose
-#endif
-#define OSInterfaceLogVerbose(tag, format, ...) ESP_LOGV(tag, format, ##__VA_ARGS__)
+constexpr const char* EspOSInterfaceLogTag = "EspOSInterface";
 
-#ifdef OSInterfaceLogDebug
-    #undef OSInterfaceLogDebug
+#ifndef OSInterfaceLogVerbose
+    #define OSInterfaceLogVerbose(tag, format, ...) ESP_LOGV(tag, format, ##__VA_ARGS__)
 #endif
-#define OSInterfaceLogDebug(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
 
-#ifdef OSInterfaceLogInfo
-    #undef OSInterfaceLogInfo
+#ifndef OSInterfaceLogDebug
+    #define OSInterfaceLogDebug(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
 #endif
-#define OSInterfaceLogInfo(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
 
-#ifdef OSInterfaceLogWarning
-    #undef OSInterfaceLogWarning
+#ifndef OSInterfaceLogInfo
+    #define OSInterfaceLogInfo(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
 #endif
-#define OSInterfaceLogWarning(tag, format, ...) ESP_LOGW(tag, AT format, ##__VA_ARGS__)
 
-#ifdef OSInterfaceLogError
-    #undef OSInterfaceLogError
+#ifndef OSInterfaceLogWarning
+    #define OSInterfaceLogWarning(tag, format, ...) ESP_LOGW(tag, AT format, ##__VA_ARGS__)
 #endif
-#define OSInterfaceLogError(tag, format, ...) ESP_LOGE(tag, AT format, ##__VA_ARGS__)
 
-#ifdef OSInterfaceSetLogLevel
-    #undef OSInterfaceSetLogLevel
+#ifndef OSInterfaceLogError
+    #define OSInterfaceLogError(tag, format, ...) ESP_LOGE(tag, AT format, ##__VA_ARGS__)
 #endif
-#define OSInterfaceSetLogLevel(tag, level) esp_log_level_set(tag, static_cast<esp_log_level_t>(level))
 
-#ifdef OSInterfaceGetLogLevel
-    #undef OSInterfaceGetLogLevel
+#ifndef OSInterfaceSetLogLevel
+    #define OSInterfaceSetLogLevel(tag, level) esp_log_level_set(tag, static_cast<esp_log_level_t>(level))
 #endif
-#define OSInterfaceGetLogLevel(tag) esp_log_get_level(tag)
+
+#ifndef OSInterfaceGetLogLevel
+    #define OSInterfaceGetLogLevel(tag) esp_log_get_level(tag)
+#endif
+
+#include "OSInterface_Log.h"
 
 #endif // ESPOSINTERFACELOG_H

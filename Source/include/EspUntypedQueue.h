@@ -7,13 +7,13 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
-#include "OSInterface.h"
+#include "OSInterface_UntypedQueue.h"
 
 class EspUntypedQueue final : public OSInterface_UntypedQueue
 {
 public:
     EspUntypedQueue(uint32_t maxMessages, uint32_t messageSize, bool& result);
-    ~EspUntypedQueue();
+    ~EspUntypedQueue() override;
 
     uint32_t length() override;
     uint32_t size() override;
