@@ -1,5 +1,5 @@
-#include "EspMutex.h"
 #include "EspOSInterfaceLog.h"
+#include "EspMutex.h"
 
 EspMutex::EspMutex(bool& result)
 {
@@ -20,7 +20,7 @@ void EspMutex::signal()
     if (xSemaphoreGive(mutex) == pdFALSE)
     {
         // Crash if we can't give the semaphore.
-        OSInterfaceLogError("EspOSInterface", "Failed to give mutex");
+        OSInterfaceLogError(EspOSInterfaceLogTag, "Failed to give mutex");
         abort();
     }
 }

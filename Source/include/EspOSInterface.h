@@ -1,6 +1,7 @@
 #ifndef OSESPINTERFACE_H
 #define OSESPINTERFACE_H
 
+#include "EspOSInterfaceLog.h" // Must be included before OSInterface.h to override logging macros
 #include "OSInterface.h"
 
 class EspOSInterface : public OSInterface
